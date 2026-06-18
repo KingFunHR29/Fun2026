@@ -1,7 +1,9 @@
-flask
-gunicorn
+fastapi
+uvicorn
+sqlalchemy
+jinja2
+python-multipart
 requests
 pandas
 openpyxl
-fastapi
-uvicorn
+gunicorn
