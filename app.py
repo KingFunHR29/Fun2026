@@ -90,6 +90,14 @@ def get_db():
 # HOME PAGE
 # ==================================================
 
+@app.get("/debug")
+def debug():
+    return {
+        "cwd": os.getcwd(),
+        "files": os.listdir(".")
+    }
+
+
 @app.get(
     "/",
     response_class=HTMLResponse
