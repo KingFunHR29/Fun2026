@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Status Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        button {
+            padding: 12px 20px;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Exam Status Student Image</h2>
+
+    <label>Bearer Token</label>
+    <input type="text" id="token">
+
+    <label>User ID</label>
+    <input type="text" id="userid">
+
+    <label>Exam ID</label>
+    <input type="text" id="examid" placeholder="1669">
+
+    <label>Question ID</label>
+    <input type="text" id="questionid">
+
+    <label>Image URL</label>
+    <input type="text" id="imageurl">
+
+    <label>Image Type</label>
+    <select id="imagetype">
+        <option value="STUDENT_EXAM_START">STUDENT_EXAM_START</option>
+        <option value="STUDENT_EXAM_END">STUDENT_EXAM_END</option>
+    </select>
+
+    <button onclick="submitRequest()">Submit</button>
+
+    <h3>Response</h3>
+    <pre id="result"></pre>
+
+<script>
+async function submitRequest() {
+
+    const token = document.getElementById("token").value;
+    const userid = document.getElementById("userid").value;
+    const examid = document.getElementById("examid").value;
+    const questionid = document.getElementById("questionid").value;
+
+    const imageurl = document.getElementById("imageurl").value;
+    const imagetype = document.getElementById("imagetype").value;
+
+    try {
+        const response = await fetch(
+            `https://backendnew.subhartidistance.com/student/exam-status-student-image/${examid}`,
+            {
+                method: "PUT",
+                headers: {
+                    "accept": "application/json",
+                    "authorization": `Bearer ${token}`,
+                    "content-type": "application/json",
+                    "device": "WEB",
+                    "userid": userid
+                },
+                body: JSON.stringify({
+                    url: imageurl,
+                    image_type: imagetype,
+                    question_id: questionid
+                })
+            }
+        );
+
+        const text = await response.text();
+
+        document.getElementById("result").textContent =
+            `Status: ${response.status}\n\n${text}`;
+
+    } catch (err) {
+        document.getElementById("result").textContent =
+            "Error: " + err.message;
+    }
+}
+</script>
+
+</body>
+</html>
