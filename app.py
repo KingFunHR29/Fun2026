@@ -98,21 +98,17 @@ def debug():
     }
 
 
-@app.get(
-    "/",
-    response_class=HTMLResponse
-)
-async def home(
-    request: Request
-):
+
+
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
 
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request
-        }
+        request=request,
+        name="index.html",
+        context={}
     )
-
 
 # ==================================================
 # UPLOAD EXCEL
@@ -475,10 +471,9 @@ async def dashboard(
         )
 
         return templates.TemplateResponse(
-
-            "dashboard.html",
-
-            {
+            request=request,
+            name="dashboard.html",
+            context={
                 "request": request,
 
                 "rows": rows,
@@ -820,10 +815,10 @@ async def exam_helper(
         print(student.question_id)
         questions_text, _ = get_questions(student.bearer_token, student.student_id, student.question_id)
         return templates.TemplateResponse(
+            request=request,
+            name="exam_helper.html",
 
-            "exam_helper.html",
-
-            {
+            context={
                 "request": request,
                 "data":{
                     "student_name":
