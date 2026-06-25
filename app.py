@@ -1217,7 +1217,7 @@ async def start_flow(data: dict):
 
     return JSONResponse({
         "logs": logs,
-        "exam_status": status,
+        # "exam_status": status,
         "exam": exam,
         "questions": questions,
         "Exam":"submit successfuly"

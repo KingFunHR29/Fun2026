@@ -749,105 +749,106 @@ function copyToken(token){
 
 /* Load Exam Status */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-    const statusCells =
-        document.querySelectorAll(
-            ".exam-status"
-        );
+    const BASE_URLS = [
+        "https://backendnew.subhartidistance.com",
+        "https://backend.subhartidistance.com"
+    ];
+
+    async function apiFetch(endpoint, options = {}) {
+
+        let lastError = null;
+
+        for (const base of BASE_URLS) {
+
+            try {
+
+                const response = await fetch(base + endpoint, options);
+
+                // Success
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                // Try next server
+                if ([404, 500, 502, 503].includes(response.status)) {
+                    console.log(`Failed on ${base} (${response.status}), trying next...`);
+                    continue;
+                }
+
+                return await response.json();
+
+            } catch (err) {
+                console.log(`${base} failed`, err);
+                lastError = err;
+            }
+        }
+
+        throw lastError || new Error("Both servers failed.");
+    }
+
+    const statusCells = document.querySelectorAll(".exam-status");
 
     for (const cell of statusCells) {
 
-        const studentId =
-            cell.dataset.studentId;
-
-        const examId =
-            cell.dataset.examId;
-
-        const token =
-            cell.dataset.token;
+        const studentId = cell.dataset.studentId;
+        const examId = cell.dataset.examId;
+        const token = cell.dataset.token;
 
         try {
 
             cell.innerHTML = `
-                <span
-                    class="badge bg-warning text-dark">
+                <span class="badge bg-warning text-dark">
                     Checking...
                 </span>
             `;
 
-            const response =
-                await fetch(
-
-                `https://backendnew.subhartidistance.com/student/exam-status/${examId}?session_id=16`,
-
+            const data = await apiFetch(
+                `/student/exam-status/${examId}?session_id=16`,
                 {
-
+                    method: "GET",
                     headers: {
-
-                        "Accept":
-                            "application/json",
-
-                        "Authorization":
-                            `Bearer ${token}`,
-
-                        "Device":
-                            "WEB",
-
-                        "Content-Type":
-                            "application/json",
-
-                        "Userid":
-                            studentId
-
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        "Device": "WEB",
+                        "Content-Type": "application/json",
+                        "Userid": studentId
                     }
+                }
+            );
 
-                });
-
-            const data =
-                await response.json();
-
-            if (
-                data.status ===
-                "success"
-            ){
+            if (data.status === "success") {
 
                 cell.innerHTML = `
-                    <span
-                        class="status-success">
+                    <span class="status-success">
                         ✓ Completed
                     </span>
                 `;
 
-            }else{
+            } else {
 
                 cell.innerHTML = `
-                    <span
-                        class="status-danger">
+                    <span class="status-danger">
                         Pending
                     </span>
                 `;
 
             }
 
-        }
-        catch(err){
+        } catch (err) {
 
             console.error(err);
 
             cell.innerHTML = `
-                <span
-                    class="status-danger">
-                    Error
-                </span>
+                <span class="status-danger">
+                        Pending
+                    </span>
             `;
         }
     }
 
 });
-
 </script>
 
 </body>
